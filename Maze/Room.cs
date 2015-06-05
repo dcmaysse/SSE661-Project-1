@@ -10,42 +10,62 @@ namespace Maze
     {
         private bool exit;
         private bool visited;
-        private Room parent;
-        private Room[] children;
+        private Room[] neighbors;
+        private int[] coords;
+        private bool[] walls;
 
-        public Room(bool exit)
+        public Room(int x, int y)
         {
-            this.exit = exit;
+            exit = false;
             visited = false;
-            parent = null;
-            children = new Room[3];
+            neighbors = new Room[4];
+            coords = new int[] { x, y };
+            walls = new bool[] { true, true, true, true };
         }
 
-        public void addChild(Room child,int pos)
+        public void addNeighbor(Room neighbor,int dir)
         {
-            children[pos] = child;
-            child.setParent(this);
+            neighbors[dir] = neighbor;
+            switch (dir)
+            {
+                case 0:
+                    neighbor.addNeighbor(this, 2);
+                    break;
+                case 1:
+                    neighbor.addNeighbor(this, 3);
+                    break;
+                case 2:
+                    neighbor.addNeighbor(this, 0);
+                    break;
+                case 3:
+                    neighbor.addNeighbor(this, 1);
+                    break;
+            }
         }
 
-        public void setParent(Room parent)
+        public void setExit()
         {
-            this.parent = parent;
+            exit = true;
         }
 
-        public void visit()
+        public void setVisited()
         {
             visited = true;
         }
 
-        public Room getParent()
+        public Room getNeighbor(int dir)
         {
-            return parent;
+            return neighbors[dir];
         }
 
-        public Room getChild(int pos)
+        public void carveWall(int dir)
         {
-            children[pos].visit();
-            return children[pos];
+            walls[dir] = false;
+        }
+
+        public bool isWall(int dir)
+        {
+            return walls[dir];
         }
 
         public bool isVisited()
