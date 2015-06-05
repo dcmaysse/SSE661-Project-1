@@ -8,12 +8,12 @@ namespace Maze
 {
     public class Room
     {
-        private Boolean exit;
-        private Boolean visited;
+        private bool exit;
+        private bool visited;
         private Room parent;
         private Room[] children;
 
-        public Room(Boolean exit)
+        public Room(bool exit)
         {
             this.exit = exit;
             visited = false;
@@ -48,12 +48,12 @@ namespace Maze
             return children[pos];
         }
 
-        public Boolean isVisited()
+        public bool isVisited()
         {
             return visited;
         }
 
-        public Boolean isExit()
+        public bool isExit()
         {
             return exit;
         }
