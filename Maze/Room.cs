@@ -11,15 +11,13 @@ namespace Maze
         private bool exit;
         private bool visited;
         private Room[] neighbors;
-        private int[] coords;
         private bool[] walls;
 
-        public Room(int x, int y)
+        public Room()
         {
             exit = false;
             visited = false;
             neighbors = new Room[4];
-            coords = new int[] { x, y };
             walls = new bool[] { true, true, true, true };
         }
 

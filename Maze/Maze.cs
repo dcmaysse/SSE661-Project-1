@@ -8,51 +8,47 @@ namespace Maze
 {
     class Maze
     {
-        Room room;
+        Room[,] rooms;
         Random rng;
-        int exitChance;
-        int unvisitedCount;
-        bool exitFound;
 
         public Maze()
         {
-            room = new Room(false);
+            rooms = new Room[10,10];
             rng = new Random();
-            exitChance = 0;
-            unvisitedCount = 0;
-            exitFound = false;
-            int rooms = rng.Next(1, 4);
-            createCorridors(room,rooms);
+            createMaze();
+            carveMaze();
         }
 
-        private void createCorridors(Room room, int rooms)
+        private void createMaze()
         {
-            for (int i = 0; i<rooms; i++)
+            for (int i=0; i<10; i++)
             {
-                int pos = rng.Next(0, 3);
-
-                while (room.getChild(pos)!=null)
+                for (int j=0; j<10; j++)
                 {
-                    pos = rng.Next(0, 3);
-                }
-
-                if (!exitFound)
-                {
-                    bool isExit = (rng.Next(0, 101) + exitChance) >= 100;
-                    room.addChild(new Room(isExit), pos);
-                    if (isExit)
-                        exitFound = isExit;
-                }
-
-                else
-                {
-                    room.addChild(new Room(false), pos);
+                    rooms[i, j] = new Room();
                 }
             }
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    rooms[i, j].addNeighbor(rooms[i + 1, j], 1);
+                    rooms[i, j].addNeighbor(rooms[i, j + 1], 2);
+                }
+            }
+        }
 
-            unvisitedCount = unvisitedCount + rooms;
-            if (!exitFound)
-                exitChance = exitChance + 5;
+        private void carveMaze()
+        {
+            List<Room> temp = new List<Room>();
+            temp.Add(rooms[rng.Next(0, 10), rng.Next(0, 10)]);
+            temp.ElementAt(0).setVisited();
+            while (temp.Count>0)
+            {
+                Room curr = temp.ElementAt(rng.Next((temp.Count) / 2, temp.Count - 1));
+                Room neighborDir = rng.Next(0, 4);
+                while (curr.getNeighbor(neighbor)
+            }
         }
     }
 }
