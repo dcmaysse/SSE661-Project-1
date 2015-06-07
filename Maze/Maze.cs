@@ -16,7 +16,7 @@ namespace Maze
 
         public Maze()
         {
-            size = 10;
+            size = 3;
             rooms = new Room[size,size];
             rng = new Random();
             createMaze();
@@ -45,7 +45,7 @@ namespace Maze
             {
                 for (int j=0; j < size; j++)
                 {
-                    rooms[i, j] = new Room();
+                    rooms[i, j] = new Room(i, j);
                 }
             }
 
@@ -54,18 +54,23 @@ namespace Maze
                 for (int j = 0; j < size - 1; j++)
                 {
                     rooms[i, j].addNeighbor(rooms[i + 1, j], 1);
+                    rooms[i + 1, j].addNeighbor(rooms[i, j], 3);
                     rooms[i, j].addNeighbor(rooms[i, j + 1], 2);
+                    rooms[i, j + 1].addNeighbor(rooms[i, j], 0);
                 }
                 rooms[i, size - 1].addNeighbor(rooms[i + 1, size - 1], 1);
-                rooms[10, size - 1].addNeighbor(rooms[size - 1, i + 1], 1);
+                rooms[i + 1, size - 1].addNeighbor(rooms[i, size - 1], 3);
+                rooms[size - 1, i].addNeighbor(rooms[size - 1, i + 1], 2);
+                rooms[size - 1, i + 1].addNeighbor(rooms[size - 1, i], 0);
             }
         }
 
         private void carveMaze()
         {
             List<Room> temp = new List<Room>();
+            List<int[]> tempXY = new List<int[]>();
             temp.Add(rooms[rng.Next(0, size), rng.Next(0, size)]);
-            temp.ElementAt(0).setVisited();
+            tempXY.Add(new int[] { temp.ElementAt(0).getX(), temp.ElementAt(0).getY() });
             Room curr;
             int neighborDir,currIndex;
             int[] disqualified;
@@ -77,8 +82,9 @@ namespace Maze
                 neighborDir = rng.Next(0, 4);
                 disqualified =new int[] { 0, 0, 0, 0 };
 
-                while (!curr.neighborExists(neighborDir)&&(curr.getNeighbor(neighborDir).isVisited())&&
-                    (disqualified[neighborDir]==1)&&(disqualified.Sum()!=4))
+                while (((curr.getX()==0&&neighborDir==3)||(curr.getX()==(size-1)&&neighborDir==1)||(curr.getY()==0&&neighborDir==0)||(curr.getY()==(size-1)&&neighborDir==2))
+                    ||(tempXY.Any((new int[] { curr.getNeighbor(neighborDir).getX(), curr.getNeighbor(neighborDir).getY() }.SequenceEqual)))
+                    &&(disqualified.Sum()!=4))
                 {
                     disqualified[neighborDir] = 1;
                     neighborDir = rng.Next(0, 4);
@@ -91,7 +97,9 @@ namespace Maze
                 else
                 {
                     curr.carveWall(neighborDir);
+                    curr.getNeighbor(neighborDir).carveWall((neighborDir + 2) % 4);
                     temp.Add(curr.getNeighbor(neighborDir));
+                    tempXY.Add(new int[] { curr.getNeighbor(neighborDir).getX(), curr.getNeighbor(neighborDir).getY() });
                     temp.ElementAt(temp.Count - 1).setVisited();
                 }
             }

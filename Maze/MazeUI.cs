@@ -25,7 +25,7 @@ namespace Maze
 
             while (playing)
             {
-                Console.WriteLine("Oh no! An evil wizard has trappedd you in a dark laybrinth. You must escape!");
+                Console.WriteLine("Oh no! An evil wizard has trapped you in a maze. You must escape!");
                 bool escaped = false;
 
                 while (escaped == false)
