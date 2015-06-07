@@ -24,7 +24,45 @@ namespace Maze
 
             while (playing)
             {
-                maze = new Maze();
+                int XVal = -1;
+                while (XVal==-1)
+                {
+                    Console.WriteLine("Please enter a width for the maze.");
+                    string inputX = Console.ReadLine();
+                    try
+                    {
+                        XVal = Convert.ToInt32(inputX);
+                    }
+                    catch (FormatException e)
+                    {
+                        Console.WriteLine("Invalid input. Please try again.");
+                    }
+                    catch (OverflowException e)
+                    {
+                        Console.WriteLine("Number too large. Please try again.");
+                    }
+                }
+
+                int YVal = -1;
+                while (YVal == -1)
+                {
+                    Console.WriteLine("Please enter a height for the maze.");
+                    string inputY = Console.ReadLine();
+                    try
+                    {
+                        YVal = Convert.ToInt32(inputY);
+                    }
+                    catch (FormatException e)
+                    {
+                        Console.WriteLine("Invalid input. Please try again.");
+                    }
+                    catch (OverflowException e)
+                    {
+                        Console.WriteLine("Number too large. Please try again.");
+                    }
+                }
+
+                maze = new Maze(XVal, YVal);
                 Console.WriteLine("Oh no! An evil wizard has trapped you in a maze.\r\nYou must escape!");
                 bool escaped = false;
 
@@ -34,16 +72,16 @@ namespace Maze
                     switch (corridors.Count)
                     {
                         case 1:
-                            Console.WriteLine("You are at a dead end. Will you go back?");
+                            Console.WriteLine("You arrive at a dead end. Will you go back?");
                             break;
                         case 2:
-                            Console.WriteLine("You are in a corridor leading "+corridors.ElementAt(0)+" and "+corridors.ElementAt(1)+".\r\nWhich way will you go?");
+                            Console.WriteLine("You progress through the corridor. You can go "+corridors.ElementAt(0)+" or "+corridors.ElementAt(1)+".\r\nWhich way will you go?");
                             break;
                         case 3:
-                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + ", and " + corridors.ElementAt(2) + ".\r\nWhich way will you go?");
+                            Console.WriteLine("You arrive in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + ", and " + corridors.ElementAt(2) + ".\r\nWhich way will you go?");
                             break;
                         case 4:
-                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + corridors.ElementAt(2) + ", and " + corridors.ElementAt(3) + ".\r\nWhich way will you go?");
+                            Console.WriteLine("You arrive in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + ", " + corridors.ElementAt(2) + ", and " + corridors.ElementAt(3) + ".\r\nWhich way will you go?");
                             break;
                     }
 
@@ -56,7 +94,25 @@ namespace Maze
 
                     else if (input == "yes")
                     {
-                        maze.move(2);
+                        switch (corridors.ElementAt(0))
+                        {
+                            case "forward":
+                                maze.move(0);
+                                escaped = maze.escaped();
+                                break;
+                            case "right":
+                                maze.move(1);
+                                escaped = maze.escaped();
+                                break;
+                            case "back":
+                                maze.move(2);
+                                escaped = maze.escaped();
+                                break;
+                            case "left":
+                                maze.move(3);
+                                escaped = maze.escaped();
+                                break;
+                        }
                     }
 
                     else if (input == "no")
@@ -93,7 +149,7 @@ namespace Maze
                     }
                 }
 
-                Console.WriteLine("You have finally escaped!\r\nAs your eyes adjust to the light of day, you begin to make out a figure.");
+                Console.WriteLine("As you walk down the long corridor, you begin to see a small light.\r\nYou rush headlong toward it and finally emerge from the dungeon into the outside world. You have escaped!\r\nAs your eyes adjust to the light of day, you begin to make out a figure.");
                 Console.WriteLine("Oh no! It's the evil wizard.\r\nHe calls down a mighty thunderbolt and you are reduced to ash in an instant.\r\nToo bad!");
                 Console.WriteLine("Play again?");
                 String playInput = "";

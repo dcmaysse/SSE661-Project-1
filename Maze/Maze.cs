@@ -11,19 +11,19 @@ namespace Maze
         Room[,] rooms;
         Room currRoom;
         Random rng;
-        int size;
+        int sizeX,sizeY;
         int facing;
 
-        public Maze()
+        public Maze(int sizeX, int sizeY)
         {
-            size = 3;
-            rooms = new Room[size,size];
+            this.sizeX = sizeX;
+            this.sizeY = sizeY;
+            rooms = new Room[sizeX,sizeY];
             rng = new Random();
             createMaze();
             carveMaze();
+            currRoom = rooms[rng.Next(0, sizeX), rng.Next(0, sizeY)];
             setExit();
-
-            currRoom = rooms[rng.Next(0,size), rng.Next(0,size)];
             int tempFacing = 0;
             int wallCount = 0;
             for (int i = 0; i < 4; i++)
@@ -41,34 +41,34 @@ namespace Maze
 
         private void createMaze()
         {
-            for (int i=0; i < size; i++)
+            for (int i=0; i < sizeX; i++)
             {
-                for (int j=0; j < size; j++)
+                for (int j=0; j < sizeY; j++)
                 {
                     rooms[i, j] = new Room(i, j);
                 }
             }
 
-            for (int i = 0; i < size - 1; i++)
+            for (int i = 0; i < sizeX - 1; i++)
             {
-                for (int j = 0; j < size - 1; j++)
+                for (int j = 0; j < sizeY - 1; j++)
                 {
                     rooms[i, j].addNeighbor(rooms[i + 1, j], 1);
                     rooms[i + 1, j].addNeighbor(rooms[i, j], 3);
                     rooms[i, j].addNeighbor(rooms[i, j + 1], 2);
                     rooms[i, j + 1].addNeighbor(rooms[i, j], 0);
                 }
-                rooms[i, size - 1].addNeighbor(rooms[i + 1, size - 1], 1);
-                rooms[i + 1, size - 1].addNeighbor(rooms[i, size - 1], 3);
-                rooms[size - 1, i].addNeighbor(rooms[size - 1, i + 1], 2);
-                rooms[size - 1, i + 1].addNeighbor(rooms[size - 1, i], 0);
+                rooms[i, sizeY - 1].addNeighbor(rooms[i + 1, sizeY - 1], 1);
+                rooms[i + 1, sizeY - 1].addNeighbor(rooms[i, sizeY - 1], 3);
+                rooms[sizeX - 1, i].addNeighbor(rooms[sizeX - 1, i + 1], 2);
+                rooms[sizeX - 1, i + 1].addNeighbor(rooms[sizeX - 1, i], 0);
             }
         }
 
         private void carveMaze()
         {
             List<Room> temp = new List<Room>();
-            temp.Add(rooms[rng.Next(0, size), rng.Next(0, size)]);
+            temp.Add(rooms[rng.Next(0, sizeX), rng.Next(0, sizeY)]);
             Room curr;
             int neighborDir,currIndex;
             int[] disqualified;
@@ -80,7 +80,7 @@ namespace Maze
                 neighborDir = rng.Next(0, 4);
                 disqualified =new int[] { 0, 0, 0, 0 };
 
-                while (((curr.getX()==0&&neighborDir==3)||(curr.getX()==(size-1)&&neighborDir==1)||(curr.getY()==0&&neighborDir==0)||(curr.getY()==(size-1)&&neighborDir==2))
+                while (((curr.getX()==0&&neighborDir==3)||(curr.getX()==(sizeX-1)&&neighborDir==1)||(curr.getY()==0&&neighborDir==0)||(curr.getY()==(sizeY-1)&&neighborDir==2))
                     ||(curr.getNeighbor(neighborDir).getVisited())
                     &&(disqualified.Sum()!=4))
                 {
@@ -106,27 +106,41 @@ namespace Maze
         {
             List<Room> temp=new List<Room>();
 
-            if (size == 1)
+            if (sizeX == 1 && sizeY==1)
                 rooms[0, 0].setExit();
             else
             { 
-                for (int i = 1; i < size - 1; i++)
+                for (int i = 1; i < sizeX - 1; i++)
                 {
                     temp.Add(rooms[i, 0]);
+                    temp.Add(rooms[i, sizeX - 1]);
+                }
+
+                for (int i = 1; i < sizeY - 1; i++)
+                {
                     temp.Add(rooms[0, i]);
-                    temp.Add(rooms[i, size - 1]);
-                    temp.Add(rooms[size - 1, i]);
+                    temp.Add(rooms[sizeY - 1, i]);
                 }
 
                 temp.Add(rooms[0, 0]);
-                temp.Add(rooms[size - 1, 0]);
-                temp.Add(rooms[0, size - 1]);
-                temp.Add(rooms[size - 1, size - 1]);
+                temp.Add(rooms[sizeX - 1, 0]);
+                temp.Add(rooms[0, sizeY - 1]);
+                temp.Add(rooms[sizeX - 1, sizeY - 1]);
                 int exitIndex = rng.Next(0, temp.Count);
                 while ((currRoom.getX()==temp.ElementAt(exitIndex).getX())&&(currRoom.getY() == temp.ElementAt(exitIndex).getY()))
                     exitIndex = rng.Next(0, temp.Count);
                 temp.ElementAt(rng.Next(0, temp.Count)).setExit();
             }
+        }
+
+        public void setSizeX(int size)
+        {
+            sizeX = size;
+        }
+
+        public void setSizeY(int size)
+        {
+            sizeY = size;
         }
 
         public void move(int dir)
