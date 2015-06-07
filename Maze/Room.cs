@@ -56,6 +56,8 @@ namespace Maze
             return neighbors[dir];
         }
 
+        public 
+
         public void carveWall(int dir)
         {
             walls[dir] = false;

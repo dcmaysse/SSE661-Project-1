@@ -22,8 +22,21 @@ namespace Maze
             createMaze();
             carveMaze();
             setExit();
+
             currRoom = rooms[size / 2, size / 2];
-            facing = 2;
+            int tempFacing = 0;
+            int wallCount = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (currRoom.isWall(i))
+                    wallCount++;
+                else
+                    tempFacing = i;
+            }
+            if (wallCount == 3)
+                facing = tempFacing;
+            else
+                facing = 2;
         }
 
         private void createMaze()
@@ -88,34 +101,65 @@ namespace Maze
         {
             List<Room> temp=new List<Room>();
 
-            for (int i = 1; i < size - 1; i++)
-            {
-                temp.Add(rooms[i, 0]);
-                temp.Add(rooms[0, i]);
-                temp.Add(rooms[i, size - 1]);
-                temp.Add(rooms[size - 1, i]);
-            }
+            if (size == 1)
+                rooms[0, 0].setExit();
+            else
+            { 
+                for (int i = 1; i < size - 1; i++)
+                {
+                    temp.Add(rooms[i, 0]);
+                    temp.Add(rooms[0, i]);
+                    temp.Add(rooms[i, size - 1]);
+                    temp.Add(rooms[size - 1, i]);
+                }
 
-            temp.Add(rooms[0, 0]);
-            temp.Add(rooms[size - 1, 0]);
-            temp.Add(rooms[0, size - 1]);
-            temp.Add(rooms[size - 1, size - 1]);
-            temp.ElementAt(rng.Next(0, temp.Count)).setExit();
+                temp.Add(rooms[0, 0]);
+                temp.Add(rooms[size - 1, 0]);
+                temp.Add(rooms[0, size - 1]);
+                temp.Add(rooms[size - 1, size - 1]);
+                temp.ElementAt(rng.Next(0, temp.Count)).setExit();
+            }
         }
 
-        private int move(int dir)
+        public void move(int dir)
         {
-            if (currRoom.isWall((facing + dir) % 4))
-                return 0;
-            else
+            currRoom=currRoom.getNeighbor((facing + dir) % 4);
+            facing= (facing + dir) % 4;
+        }
+
+        public List<String> getCorridors()
+        {
+            List<String> corridors = new List<String>();
+            for (int i = 0; i < 4; i++)
             {
-                currRoom=currRoom.getNeighbor((facing + dir) % 4);
-                facing= (facing + dir) % 4);
-                if (currRoom.isExit())
-                    return 2;
-                else
-                    return 1;
+                if (!(currRoom.isWall(i)))
+                {
+                    switch ((facing + i) % 4)
+                    {
+                        case 0:
+                            corridors.Add("forward");
+                            break;
+                        case 1:
+                            corridors.Add("right");
+                            break;
+                        case 2:
+                            corridors.Add("back");
+                            break;
+                        case 3:
+                            corridors.Add("left");
+                            break;
+                    }
+                }
             }
+            return corridors;
+        }
+
+        public bool escaped()
+        {
+            if (currRoom.isExit())
+                return true;
+            else
+                return false;
         }
     }
 }
