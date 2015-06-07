@@ -9,45 +9,112 @@ namespace Maze
     class Maze
     {
         Room[,] rooms;
+        Room currRoom;
         Random rng;
+        int size;
+        int facing;
 
         public Maze()
         {
-            rooms = new Room[10,10];
+            size = 10;
+            rooms = new Room[size,size];
             rng = new Random();
             createMaze();
             carveMaze();
+            setExit();
+            currRoom = rooms[size / 2, size / 2];
+            facing = 2;
         }
 
         private void createMaze()
         {
-            for (int i=0; i<10; i++)
+            for (int i=0; i < size; i++)
             {
-                for (int j=0; j<10; j++)
+                for (int j=0; j < size; j++)
                 {
                     rooms[i, j] = new Room();
                 }
             }
-            for (int i = 0; i < 9; i++)
+
+            for (int i = 0; i < size - 1; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < size - 1; j++)
                 {
                     rooms[i, j].addNeighbor(rooms[i + 1, j], 1);
                     rooms[i, j].addNeighbor(rooms[i, j + 1], 2);
                 }
+                rooms[i, size - 1].addNeighbor(rooms[i + 1, size - 1], 1);
+                rooms[10, size - 1].addNeighbor(rooms[size - 1, i + 1], 1);
             }
         }
 
         private void carveMaze()
         {
             List<Room> temp = new List<Room>();
-            temp.Add(rooms[rng.Next(0, 10), rng.Next(0, 10)]);
+            temp.Add(rooms[rng.Next(0, size), rng.Next(0, size)]);
             temp.ElementAt(0).setVisited();
+            Room curr;
+            int neighborDir,currIndex;
+            int[] disqualified;
+
             while (temp.Count>0)
             {
-                Room curr = temp.ElementAt(rng.Next((temp.Count) / 2, temp.Count - 1));
-                Room neighborDir = rng.Next(0, 4);
-                while (curr.getNeighbor(neighbor)
+                currIndex = rng.Next((temp.Count) / 2, temp.Count);
+                curr = temp.ElementAt(currIndex);
+                neighborDir = rng.Next(0, 4);
+                disqualified =new int[] { 0, 0, 0, 0 };
+
+                while (!curr.neighborExists(neighborDir)&&(curr.getNeighbor(neighborDir).isVisited())&&
+                    (disqualified[neighborDir]==1)&&(disqualified.Sum()!=4))
+                {
+                    disqualified[neighborDir] = 1;
+                    neighborDir = rng.Next(0, 4);
+                }
+
+                if (disqualified.Sum()==4)
+                {
+                    temp.RemoveAt(currIndex);
+                }
+                else
+                {
+                    curr.carveWall(neighborDir);
+                    temp.Add(curr.getNeighbor(neighborDir));
+                    temp.ElementAt(temp.Count - 1).setVisited();
+                }
+            }
+        }
+
+        private void setExit()
+        {
+            List<Room> temp=new List<Room>();
+
+            for (int i = 1; i < size - 1; i++)
+            {
+                temp.Add(rooms[i, 0]);
+                temp.Add(rooms[0, i]);
+                temp.Add(rooms[i, size - 1]);
+                temp.Add(rooms[size - 1, i]);
+            }
+
+            temp.Add(rooms[0, 0]);
+            temp.Add(rooms[size - 1, 0]);
+            temp.Add(rooms[0, size - 1]);
+            temp.Add(rooms[size - 1, size - 1]);
+            temp.ElementAt(rng.Next(0, temp.Count)).setExit();
+        }
+
+        private int move(int dir)
+        {
+            if (currRoom.isWall((facing + dir) % 4))
+                return 0;
+            else
+            {
+                currRoom=currRoom.getNeighbor((facing + dir) % 4);
+                facing= (facing + dir) % 4);
+                if (currRoom.isExit())
+                    return 2;
+                else
+                    return 1;
             }
         }
     }

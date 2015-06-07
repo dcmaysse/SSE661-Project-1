@@ -59,6 +59,21 @@ namespace Maze
         public void carveWall(int dir)
         {
             walls[dir] = false;
+            switch (dir)
+            {
+                case 0:
+                    neighbors[dir].carveWall(2);
+                    break;
+                case 1:
+                    neighbors[dir].carveWall(3);
+                    break;
+                case 2:
+                    neighbors[dir].carveWall(0);
+                    break;
+                case 3:
+                    neighbors[dir].carveWall(1);
+                    break;
+            }
         }
 
         public bool isWall(int dir)
@@ -74,6 +89,14 @@ namespace Maze
         public bool isExit()
         {
             return exit;
+        }
+
+        public bool neighborExists(int dir)
+        {
+            if (neighbors[dir] == null)
+                return false;
+            else
+                return true;
         }
     }
 }
