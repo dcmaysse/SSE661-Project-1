@@ -54,6 +54,11 @@ namespace Maze
             return y;
         }
 
+        public bool getVisited()
+        {
+            return visited;
+        }
+
         public void carveWall(int dir)
         {
             walls[dir] = false;

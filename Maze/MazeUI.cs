@@ -14,7 +14,6 @@ namespace Maze
 
         static void Main()
         {
-            maze = new Maze();
             corridors = new List<string>();
             explore();
         }
@@ -25,7 +24,8 @@ namespace Maze
 
             while (playing)
             {
-                Console.WriteLine("Oh no! An evil wizard has trapped you in a maze. You must escape!");
+                maze = new Maze();
+                Console.WriteLine("Oh no! An evil wizard has trapped you in a maze.\r\nYou must escape!");
                 bool escaped = false;
 
                 while (escaped == false)
@@ -37,13 +37,13 @@ namespace Maze
                             Console.WriteLine("You are at a dead end. Will you go back?");
                             break;
                         case 2:
-                            Console.WriteLine("You are in a corridor.  Will you go forward or back?");
+                            Console.WriteLine("You are in a corridor leading "+corridors.ElementAt(0)+" and "+corridors.ElementAt(1)+".\r\nWhich way will you go?");
                             break;
                         case 3:
-                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + ", and " + corridors.ElementAt(2) + ". Which way will you go?");
+                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + ", and " + corridors.ElementAt(2) + ".\r\nWhich way will you go?");
                             break;
                         case 4:
-                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + corridors.ElementAt(2) + ", and " + corridors.ElementAt(3) + ". Which way will you go?");
+                            Console.WriteLine("You are in a room with corridors leading " + corridors.ElementAt(0) + ", " + corridors.ElementAt(1) + corridors.ElementAt(2) + ", and " + corridors.ElementAt(3) + ".\r\nWhich way will you go?");
                             break;
                     }
 
@@ -93,8 +93,8 @@ namespace Maze
                     }
                 }
 
-                Console.WriteLine("You have finally escaped! As your eyes adjust to the light of day, you begin to make out a figure.");
-                Console.WriteLine("Oh no! It's the evil wizard. He calls down a mighty thunderbolt and you are reduced to ash in an instant. Too bad!");
+                Console.WriteLine("You have finally escaped!\r\nAs your eyes adjust to the light of day, you begin to make out a figure.");
+                Console.WriteLine("Oh no! It's the evil wizard.\r\nHe calls down a mighty thunderbolt and you are reduced to ash in an instant.\r\nToo bad!");
                 Console.WriteLine("Play again?");
                 String playInput = "";
                 while (playInput!="yes"&&playInput!="no")

@@ -23,7 +23,7 @@ namespace Maze
             carveMaze();
             setExit();
 
-            currRoom = rooms[size / 2, size / 2];
+            currRoom = rooms[rng.Next(0,size), rng.Next(0,size)];
             int tempFacing = 0;
             int wallCount = 0;
             for (int i = 0; i < 4; i++)
@@ -68,9 +68,7 @@ namespace Maze
         private void carveMaze()
         {
             List<Room> temp = new List<Room>();
-            List<int[]> tempXY = new List<int[]>();
             temp.Add(rooms[rng.Next(0, size), rng.Next(0, size)]);
-            tempXY.Add(new int[] { temp.ElementAt(0).getX(), temp.ElementAt(0).getY() });
             Room curr;
             int neighborDir,currIndex;
             int[] disqualified;
@@ -83,7 +81,7 @@ namespace Maze
                 disqualified =new int[] { 0, 0, 0, 0 };
 
                 while (((curr.getX()==0&&neighborDir==3)||(curr.getX()==(size-1)&&neighborDir==1)||(curr.getY()==0&&neighborDir==0)||(curr.getY()==(size-1)&&neighborDir==2))
-                    ||(tempXY.Any((new int[] { curr.getNeighbor(neighborDir).getX(), curr.getNeighbor(neighborDir).getY() }.SequenceEqual)))
+                    ||(curr.getNeighbor(neighborDir).getVisited())
                     &&(disqualified.Sum()!=4))
                 {
                     disqualified[neighborDir] = 1;
@@ -99,7 +97,6 @@ namespace Maze
                     curr.carveWall(neighborDir);
                     curr.getNeighbor(neighborDir).carveWall((neighborDir + 2) % 4);
                     temp.Add(curr.getNeighbor(neighborDir));
-                    tempXY.Add(new int[] { curr.getNeighbor(neighborDir).getX(), curr.getNeighbor(neighborDir).getY() });
                     temp.ElementAt(temp.Count - 1).setVisited();
                 }
             }
@@ -125,6 +122,9 @@ namespace Maze
                 temp.Add(rooms[size - 1, 0]);
                 temp.Add(rooms[0, size - 1]);
                 temp.Add(rooms[size - 1, size - 1]);
+                int exitIndex = rng.Next(0, temp.Count);
+                while ((currRoom.getX()==temp.ElementAt(exitIndex).getX())&&(currRoom.getY() == temp.ElementAt(exitIndex).getY()))
+                    exitIndex = rng.Next(0, temp.Count);
                 temp.ElementAt(rng.Next(0, temp.Count)).setExit();
             }
         }
@@ -142,7 +142,7 @@ namespace Maze
             {
                 if (!(currRoom.isWall(i)))
                 {
-                    switch ((facing + i) % 4)
+                    switch ((((i-facing)%4)+4) % 4)
                     {
                         case 0:
                             corridors.Add("forward");
